@@ -12,6 +12,12 @@ class FormTest extends TripalTestCase {
   use DBTransaction;
 
   public function test_tripal_quick_fasta_fetch_features_for_sequence_test() {
+    $mrna_term = chado_get_cvterm(['id' => 'SO:0000234']);
+    $prot_term = chado_get_cvterm(['id' => 'SO:0000104']);
+
+    $mrna = factory('chado.feature')->create(['type_id' => $mrna_term->cvterm_id]);
+    $protein = factory('chado.feature')->create(['type_id' => $prot_term->cvterm_id]);
+
     $features = tripal_quick_fasta_fetch_features_for_sequence();
     $this->assertNotEmpty($features);
   }
