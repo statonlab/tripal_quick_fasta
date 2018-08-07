@@ -19,4 +19,6 @@ function tripal_quick_fasta_menu() {
     'file_path' => drupal_get_path('module', 'tripal_quick_fasta'),
     ];
 
+  return $items;
+
 }
