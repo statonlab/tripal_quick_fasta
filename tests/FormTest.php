@@ -21,12 +21,14 @@ class FormTest extends TripalTestCase {
 
     $mrna_term = chado_get_cvterm(['id' => 'SO:0000234']);
     $prot_term = chado_get_cvterm(['id' => 'SO:0000104']);
-    $type_term = chado_get_cvterm(['id' => 'SO:0000004']);
+    $type_term = chado_get_cvterm(['id' => 'SO:0000004']);//this is a random term....
 
     $mrna = factory('chado.feature')->create(['type_id' => $mrna_term->cvterm_id]);
     $protein = factory('chado.feature')->create(['type_id' => $prot_term->cvterm_id]);
 
+
     //add relationship
+
     db_insert('chado.feature_relationship')
       ->fields([
         'subject_id' => $protein->feature_id,

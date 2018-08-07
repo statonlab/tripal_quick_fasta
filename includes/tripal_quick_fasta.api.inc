@@ -1,5 +1,47 @@
 <?php
 
+function tripal_quick_run_file_job() {
+
+  //open file
+  $uri = 'public://sitewide_proteins_with_mRNA_names.FASTA';
+  $path = file_create_url($uri);
+
+
+  $prot_term = chado_get_cvterm(['id' => 'SO:0000104']);
+  $query = db_select('chado.feature', 'f')
+    ->fields('f', ['feature_id'])
+    ->condition('f.type_id', $prot_term->cvterm_id);
+  $count = $query->countQuery()->execute();
+  $n = 500;
+  $offset = 0;
+  while ($offset < $count) {
+    $chunk = $query->range($offset, $n)->execute()->fetchAll();
+    tripal_quick_get_protein_seqs_mRNA_names($chunk, $path);
+    $offset += $n;
+  }
+
+}
+
+function tripal_quick_get_protein_seqs_mRNA_names($protein_feature_chunk, $path) {
+
+  $fh = fopen(drupal_realpath($path), "w");
+  foreach ($protein_feature_chunk as $feature_id) {
+
+    try {
+      $seq = tripal_quick_fasta_fetch_seq($feature_id);
+      $name = tripal_quick_fasta_fetch_parent_mRNA($feature_id);
+
+      fwrite($fh, ">" . $name . "\n" . $seq . "\n");
+
+    } catch (Exception $e) {
+      print($e);
+      return;
+    }
+
+  }
+  fclose($fh);
+}
+
 function tripal_quick_fasta_fetch_features_for_sequence() {
 
   $query = db_select('chado.feature', 'f');
@@ -19,15 +61,37 @@ function tripal_quick_fasta_fetch_features_for_sequence() {
 
 
 /**
+ * given a feature, fetch the parent's uniquename.
+ * note: feature should only have one parent of type mRNA and/or mrna_contig
+ *
  * @param $feature_id
  *
  * @return mixed
  */
-function tripal_quick_fasta_fetch_parent_mRNA($feature_id){
+function tripal_quick_fasta_fetch_parent_mRNA($feature_id) {
+  $mrna_term = chado_get_cvterm(['id' => 'SO:0000234'])->cvterm_id;
+  $mrna_contig_term = chado_get_cvterm(['id' => 'SO:0001829'])->cvterm_id;
+
   $query = db_select('chado.feature_relationship', 'fr');
-    $query ->join('chado.feature', 'f', 'fr.object_id = f.feature_id');
+  $query->join('chado.feature', 'f', 'fr.object_id = f.feature_id');
   $query->fields('f', ['uniquename']);
   $query->condition('fr.subject_id', $feature_id);
+  $query->condition('f.type_id', [$mrna_term, $mrna_contig_term], 'IN');
   $result = $query->execute()->fetchField();
   return $result;
+}
+
+function tripal_quick_fasta_fetch_seq($feature_id) {
+
+  $result = db_select('chado.feature', 'f')
+    ->fields('f', ['sequence'])
+    ->condition('f.feature_id', $feature_id)
+    ->execute()->fetchField();
+
+  if (!$result) {
+
+  }
+  return $result;
+
+
 }
