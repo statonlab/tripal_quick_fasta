@@ -52,10 +52,13 @@ function tripal_quick_fasta_form($form, &$form_state) {
   //
   //  }
 
-  $form['description'] = ['#markup' => 'this module is in beta.  Currently, it only creates a FASTA file for all proteins (type = polypeptide) with the header as the uniquename of the parent mRNA or mRNA_feature.'];
+  $form['description'] = ['#markup' => '<p>this module is in beta.  Currently, it only creates a FASTA file for all proteins (type = polypeptide) with the header as the uniquename of the parent mRNA or mRNA_feature.</p>'];
   $form['submit'] = [
     '#type' => 'submit',
+    '#value' => 'Create FASTA'
   ];
+
+  return $form;
 
 }
 

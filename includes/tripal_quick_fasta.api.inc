@@ -3,34 +3,40 @@
 function tripal_quick_run_file_job() {
 
   //open file
-  $uri = 'public://sitewide_proteins_with_mRNA_names.FASTA';
-  $path = file_create_url($uri);
-
+  // $uri = 'public://sitewide_proteins_with_mRNA_names.FASTA';
+  $path = 'public://sitewide_proteins_with_mRNA_names.FASTA';
+  // $path = file_create_url($uri);
 
   $prot_term = chado_get_cvterm(['id' => 'SO:0000104']);
   $query = db_select('chado.feature', 'f')
     ->fields('f', ['feature_id'])
     ->condition('f.type_id', $prot_term->cvterm_id);
-  $count = $query->countQuery()->execute();
+
+  $count = $query->countQuery()->execute()->fetchField();
+
   $n = 500;
   $offset = 0;
+  print("creating FASTA file for $count sequences.  This may take a while\n");
   while ($offset < $count) {
+
+    if ($offset % ($n * 20) == 0) {
+      print ("sequence number " . $offset . "\n");
+    }
     $chunk = $query->range($offset, $n)->execute()->fetchAll();
+
     tripal_quick_get_protein_seqs_mRNA_names($chunk, $path);
     $offset += $n;
   }
-
 }
 
 function tripal_quick_get_protein_seqs_mRNA_names($protein_feature_chunk, $path) {
 
   $fh = fopen(drupal_realpath($path), "w");
-  foreach ($protein_feature_chunk as $feature_id) {
-
+  foreach ($protein_feature_chunk as $item) {
+    $feature_id = $item->feature_id;
     try {
       $seq = tripal_quick_fasta_fetch_seq($feature_id);
       $name = tripal_quick_fasta_fetch_parent_mRNA($feature_id);
-
       fwrite($fh, ">" . $name . "\n" . $seq . "\n");
 
     } catch (Exception $e) {
@@ -84,7 +90,7 @@ function tripal_quick_fasta_fetch_parent_mRNA($feature_id) {
 function tripal_quick_fasta_fetch_seq($feature_id) {
 
   $result = db_select('chado.feature', 'f')
-    ->fields('f', ['sequence'])
+    ->fields('f', ['residues'])
     ->condition('f.feature_id', $feature_id)
     ->execute()->fetchField();
 
