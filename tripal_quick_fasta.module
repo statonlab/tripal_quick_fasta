@@ -1,0 +1,22 @@
+<?php
+
+module_load_include('inc', 'tripal_quick_fasta', 'includes/tripal_quick_fasta.api');
+
+/**
+* implement hook menu
+*/
+
+function tripal_quick_fasta_menu() {
+  $admin_url_base = 'admin/tripal/extension/tripal_quick_fasta';
+
+  $items[$admin_url_base] = [
+    'title' => 'Tripal Quick Fasta',
+    'description' => t('Tripal Quick FASTA'),
+    'access arguments' => [' Tripal Quick FASTA'],
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['tripal_quick_fasta_form'],
+    'file' => 'includes/tripal_quick_fasta.form.inc',
+    'file_path' => drupal_get_path('module', 'tripal_quick_fasta'),
+    ];
+
+}

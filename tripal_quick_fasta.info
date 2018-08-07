@@ -1,0 +1,7 @@
+name = Tripal Quick FASTA
+description = Download features as FASTA
+project = tripal_quick_fasta
+package = Tripal Extensions
+core = 7.x
+version = 7.x-3.x
+dependencies[] = tripal
