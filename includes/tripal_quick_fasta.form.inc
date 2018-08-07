@@ -17,19 +17,42 @@ function tripal_quick_fasta_form($form, &$form_state) {
     '#options' => $feature_type_options,
   ];
 
-  $form['headers'] = [
-    '#type' => 'checkbox',
-    '#title' => 'Use the headers from a related feature',
-    '#description' => 'The headers can come from a related feature type.',
-  ];
+  $selected_type = $form_state['values']['feature_type'];
 
-  $form['header_select'] = [
-    '#type' => 'fieldset',
-    '#collapsible' => FALSE,
-    '#collapsed' => FALSE,
-    '#prefix' => '<div id = "quick-fasta-header-select">',
-    '#suffix' => '</div>',
-  ];
+
+  $peptide_term = chado_get_cvterm(['id' => 'SO:0000104']);
+
+  if ($selected_type === $peptide_term->cvterm_id){
+
+
+
+
+    $form['header_select'] = [
+      '#type' => 'fieldset',
+      '#collapsible' => FALSE,
+      '#collapsed' => FALSE,
+      '#prefix' => '<div id = "quick-fasta-header-select">',
+      '#suffix' => '</div>',
+    ];
+
+
+    $form['header_select']['headers'] = [
+      '#type' => 'checkbox',
+      '#title' => 'Use the headers from mRNA',
+      '#description' => 'The headers can come from a related feature type.',
+    ];
+
+
+
+    $form['header_select']['related_feature'] = [
+      '#type' => 'select',
+      '#title' => 'title',
+      '#description' => 'description',
+      '#options' => $feature_type_options
+    ];
+
+
+  }
 
 
 }

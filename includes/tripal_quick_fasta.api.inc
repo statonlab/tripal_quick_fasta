@@ -16,3 +16,18 @@ function tripal_quick_fasta_fetch_features_for_sequence() {
 
   return $types;
 }
+
+
+/**
+ * @param $feature_id
+ *
+ * @return mixed
+ */
+function tripal_quick_fasta_fetch_parent_mRNA($feature_id){
+  $query = db_select('chado.feature_relationship', 'fr');
+    $query ->join('chado.feature', 'f', 'fr.object_id = f.feature_id');
+  $query->fields('f', ['uniquename']);
+  $query->condition('fr.subject_id', $feature_id);
+  $result = $query->execute()->fetchField();
+  return $result;
+}
