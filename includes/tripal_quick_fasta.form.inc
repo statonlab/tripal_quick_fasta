@@ -67,7 +67,5 @@ function tripal_quick_fasta_form_submit($form, &$form_state) {
 
   tripal_add_job('tripal_quick_fasta_file_creation', 'tripal_quick_fasta', 'tripal_quick_run_file_job', [], $user->uid,
     $priority = 10, $includes = [], $ignore_duplicate = FALSE);
-
-  tripal_quick_run_file_job();
 }
 
