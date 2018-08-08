@@ -55,7 +55,7 @@ function tripal_quick_get_protein_seqs_mRNA_names($protein_feature_chunk, $path)
             $seq = tripal_quick_fasta_fetch_seq($feature_id);
             $name = tripal_quick_fasta_fetch_parent_mRNA($feature_id);
             if (empty($name)) {
-                print "Waring: feautre ID $feature_id has no parent. Skipped!";
+                print "Warning: feature ID $feature_id has no parent. Skipped!";
                 continue;
             }
             fwrite($fh, ">".$name."\n".$seq."\n");
