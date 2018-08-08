@@ -23,7 +23,7 @@ function tripal_quick_run_file_job()
 
     $n = 500;
     $offset = 0;
-    print("creating FASTA file for $count sequences.  This may take a while\n");
+    print "creating FASTA file for $count sequences. This may take a while\n";
     while ($offset < $count) {
 
         if ($offset % ($n * 20) == 0) {
@@ -55,7 +55,7 @@ function tripal_quick_get_protein_seqs_mRNA_names($protein_feature_chunk, $path)
             $seq = tripal_quick_fasta_fetch_seq($feature_id);
             $name = tripal_quick_fasta_fetch_parent_mRNA($feature_id);
             if (empty($name)) {
-                print "Warning: feature ID $feature_id has no parent. Skipped!";
+                print "Warning: feature ID $feature_id has no parent. Skipped!\n";
                 continue;
             }
             fwrite($fh, ">".$name."\n".$seq."\n");
