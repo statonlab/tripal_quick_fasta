@@ -8,6 +8,18 @@
  */
 function tripal_quick_fasta_form($form, &$form_state) {
 
+
+
+  $parent_feature_type_options = tripal_quick_fasta_get_parent_feature_types();
+
+
+  $form['parent_feature_type'] = [
+    '#type' => 'select',
+    '#title' => 'parent feature type',
+    '#description' => 'select a parent feature type',
+    '#options' => $parent_feature_type_options
+  ];
+
   //
   //  $feature_type_options = tripal_quick_fasta_fetch_features_for_sequence();
   //

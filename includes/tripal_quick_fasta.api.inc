@@ -101,3 +101,20 @@ function tripal_quick_fasta_fetch_seq($feature_id) {
 
 
 }
+
+function tripal_quick_fasta_get_parent_feature_types(){
+
+  $query = db_select('chado.feature', 'f');
+    $query->join('chado.cvterm', 'cvt', ['f.type_id = cvt.cvterm_id']);
+    $query->fields('cvt', ['cvterm_id', 'name']);
+    $query->distinct();
+
+    $results = $query->execute->fetchAll();
+
+    $out = [];
+
+    foreach ($results as $result){
+      $out[$result->cvterm_id] = ['name' => $result->name];
+    }
+    return $out;
+}

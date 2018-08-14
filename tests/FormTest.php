@@ -22,7 +22,6 @@ class FormTest extends TripalTestCase {
     $this->assertNotEmpty($features);
   }
 
-
   public function test_tripal_quick_fasta_fetch_parent_mRNA_test() {
 
     $mrna_term = chado_get_cvterm(['id' => 'SO:0000234']);
@@ -47,5 +46,17 @@ class FormTest extends TripalTestCase {
     $parent_result = tripal_quick_fasta_fetch_parent_mRNA($protein->feature_id);
     $this->assertEquals($mrna->uniquename, $parent_result);
 
+  }
+
+
+  public function test_tripal_quick_fasta_get_parent_feature_types_test(){
+
+    $term = factory('chado.cvterm')->create();
+    factory('chado.feature')->create(['type_id' => $term->cvterm_id]);
+
+    $types = tripal_quick_fasta_get_parent_feature_types();
+    $this->assertNotEmpty($types);
+    $this->assertArrayHasKey($term->cvterm_id, $types);
+    $this->assertEquals($term->name, $types[$term->cvterm_id]);
   }
 }
