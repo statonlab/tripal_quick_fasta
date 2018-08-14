@@ -1,8 +1,7 @@
 <?php
 
-function tripal_quick_run_file_job($args) {
+function tripal_quick_run_file_job($parent_type_id) {
 
-  $parent_type_id = $args['parent_feature_type'];
 
   // $type_name = db_select('chado.cvterm', 't')->fields('t', ['name'])->condition('t.cvterm_id', $parent_type_id)->execute()->fetchField();
 
@@ -15,8 +14,7 @@ function tripal_quick_run_file_job($args) {
   $query->join('chado.feature_relationship', 'fr', 'f.feature_id = fr.subject_id');
   $query->join('chado.feature', 'ftwo', 'ftwo.feature_id = fr.object_id');
   $query->condition('f.type_id', $prot_term->cvterm_id);
-  $query->condition('ftwo.type-id', $parent_type_id);
-
+  $query->condition('ftwo.type_id', $parent_type_id);
   $count = $query->countQuery()->execute()->fetchField();
 
   $n = 500;
@@ -49,7 +47,10 @@ function tripal_quick_get_protein_seqs_mRNA_names($protein_feature_chunk, $path,
     try {
       $seq = tripal_quick_fasta_fetch_seq($feature_id);
       $name = tripal_quick_fasta_fetch_parent_feature($feature_id, $parent_type_id);
-      fwrite($fh, ">" . $name . "\n" . $seq . "\n");
+
+      if ($seq) {
+        fwrite($fh, ">" . $name . "\n" . $seq . "\n");
+      }
 
     } catch (Exception $e) {
       print($e);
@@ -105,7 +106,7 @@ function tripal_quick_fasta_fetch_seq($feature_id) {
     ->execute()->fetchField();
 
   if (!$result) {
-    tripal_report_error('tripal', TRIPAL_ERROR, "No residues for feature ID '%feature'.",
+    tripal_report_error('tripal', TRIPAL_WARNING, "No residues for feature ID '%feature'.",
       ['%feature' => $feature_id]);
   }
   return $result;
