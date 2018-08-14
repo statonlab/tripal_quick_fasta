@@ -1,25 +1,23 @@
 <?php
 
 function tripal_quick_run_file_job($parent_type_id) {
-
-
-  // $type_name = db_select('chado.cvterm', 't')->fields('t', ['name'])->condition('t.cvterm_id', $parent_type_id)->execute()->fetchField();
-
   $name = 'proteins_from_' . $parent_type_id . '.fasta';
   $path = 'public://' . $name;
-  // $path = file_create_url($uri);
+  if (file_exists(drupal_realpath($path))) {
+    unlink(drupal_realpath($path));
+  }
   $prot_term = chado_get_cvterm(['id' => 'SO:0000104']);
-  $query = db_select('chado.feature', 'f')
-    ->fields('f', ['feature_id']);
-  $query->join('chado.feature_relationship', 'fr', 'f.feature_id = fr.subject_id');
+  $query = db_select('chado.feature', 'f')->fields('f', ['feature_id']);
+  $query->join('chado.feature_relationship', 'fr',
+    'f.feature_id = fr.subject_id');
   $query->join('chado.feature', 'ftwo', 'ftwo.feature_id = fr.object_id');
   $query->condition('f.type_id', $prot_term->cvterm_id);
   $query->condition('ftwo.type_id', $parent_type_id);
+  $query->orderBy('feature_id', 'ASC');
   $count = $query->countQuery()->execute()->fetchField();
-
   $n = 500;
   $offset = 0;
-  print("creating FASTA file for $count sequences.  This may take a while\n");
+  print "creating FASTA file for $count sequences. This may take a while\n";
   while ($offset < $count) {
 
     if ($offset % ($n * 20) == 0) {
@@ -38,25 +36,37 @@ function tripal_quick_run_file_job($parent_type_id) {
  * @param $protein_feature_chunk
  * @param $path
  * @param $parent_type_id
+ *
+ * @throws \Exception
  */
-function tripal_quick_get_protein_seqs_mRNA_names($protein_feature_chunk, $path, $parent_type_id) {
+function tripal_quick_get_protein_seqs_mRNA_names(
+  $protein_feature_chunk,
+  $path,
+  $parent_type_id
+) {
 
-  $fh = fopen(drupal_realpath($path), "w");
+  $fh = fopen(drupal_realpath($path), 'a');
+  if ($fh === FALSE) {
+    throw new Exception('Unable to open file at path: ' . drupal_realpath($path));
+  }
   foreach ($protein_feature_chunk as $item) {
     $feature_id = $item->feature_id;
     try {
       $seq = tripal_quick_fasta_fetch_seq($feature_id);
-      $name = tripal_quick_fasta_fetch_parent_feature($feature_id, $parent_type_id);
-
+      $name = tripal_quick_fasta_fetch_parent_feature($feature_id,
+        $parent_type_id);
+      if (empty($name)) {
+        print "Warning: feature ID $feature_id has no parent. Skipped!\n";
+        continue;
+      }
       if ($seq) {
         fwrite($fh, ">" . $name . "\n" . $seq . "\n");
       }
-
     } catch (Exception $e) {
-      print($e);
+      print $e->getMessage();
+
       return;
     }
-
   }
   fclose($fh);
 }
@@ -77,7 +87,6 @@ function tripal_quick_fasta_fetch_features_for_sequence() {
 
   return $types;
 }
-
 
 /**
  * given a feature, fetch the parent's uniquename.
@@ -103,11 +112,12 @@ function tripal_quick_fasta_fetch_seq($feature_id) {
   $result = db_select('chado.feature', 'f')
     ->fields('f', ['residues'])
     ->condition('f.feature_id', $feature_id)
-    ->execute()->fetchField();
+    ->execute()
+    ->fetchField();
 
   if (!$result) {
-    tripal_report_error('tripal', TRIPAL_WARNING, "No residues for feature ID '%feature'.",
-      ['%feature' => $feature_id]);
+    tripal_report_error('tripal', TRIPAL_WARNING,
+      "No residues for feature ID '%feature'.", ['%feature' => $feature_id]);
   }
   return $result;
 }
