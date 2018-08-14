@@ -74,10 +74,21 @@ function tripal_quick_fasta_form($form, &$form_state) {
 
 }
 
+function tripal_quick_fasta_form_validate($form, &$form_state){
+
+  if (!isset($form_state['values']['parent_feature_type'])){
+    form_set_error('parent_feature_type', 'a parent feature type is required');
+  }
+}
+
 function tripal_quick_fasta_form_submit($form, &$form_state) {
   global $user;
 
-  tripal_add_job('tripal_quick_fasta_file_creation', 'tripal_quick_fasta', 'tripal_quick_run_file_job', [], $user->uid,
+  $args = [
+    'parent_feature_type' => $form_state['values']['parent_feature_type']
+  ];
+
+  tripal_add_job('tripal_quick_fasta_file_creation', 'tripal_quick_fasta', 'tripal_quick_run_file_job', $args, $user->uid,
     $priority = 10, $includes = [], $ignore_duplicate = FALSE);
 }
 

@@ -43,13 +43,13 @@ class FormTest extends TripalTestCase {
       ->execute();
 
 
-    $parent_result = tripal_quick_fasta_fetch_parent_mRNA($protein->feature_id);
+    $parent_result = tripal_quick_fasta_fetch_parent_feature($protein->feature_id, $mrna->type_id);
     $this->assertEquals($mrna->uniquename, $parent_result);
 
   }
 
 
-  public function test_tripal_quick_fasta_get_parent_feature_types_test(){
+  public function test_tripal_quick_fasta_get_parent_feature_types_test() {
 
     $term = factory('chado.cvterm')->create();
     factory('chado.feature')->create(['type_id' => $term->cvterm_id]);
