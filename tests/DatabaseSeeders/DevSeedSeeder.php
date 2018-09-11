@@ -17,29 +17,29 @@ class DevSeedSeeder extends Seeder
      * $sequence_analysis. Uncomment the array to create that chado record.
      */
 
-// protected $organism = [
-//         'common_name' => 'F. excelsior miniature',
-//         'genus' => 'Fraxinus',
-//         'species' => 'excelsior',
-//         'abbreviation' => 'F. excelsor',
-//         'comment' => 'Loaded with TripalDev Seed.',
-//       ];
+protected $organism = [
+        'common_name' => 'F. excelsior miniature',
+        'genus' => 'Fraxinus',
+        'species' => 'excelsior',
+        'abbreviation' => 'F. excelsor',
+        'comment' => 'Loaded with TripalDev Seed.',
+      ];
 //
-// protected $sequence_analysis = [
-//       'name' => 'Fraxinus exclesior miniature dataset',
-//       'description' => 'Tripal Dev Seed',
-//     ];
-//
-//     protected $expression_analysis = [
-//
-//       'name' => 'Fraxinus exclesior miniature dataset Expression Analysis',
-//       'description' => 'Tripal Dev Seed',
-//     ];
-//
-//   protected $blastdb = [
-//     'name' => 'DevSeed Database: TREMBL',
-//     'description' => 'A dummy database created by DevSeed',
-//   ];
+protected $sequence_analysis = [
+      'name' => 'Fraxinus exclesior miniature dataset',
+      'description' => 'Tripal Dev Seed',
+    ];
+
+    protected $expression_analysis = [
+
+      'name' => 'Fraxinus exclesior miniature dataset Expression Analysis',
+      'description' => 'Tripal Dev Seed',
+    ];
+
+  protected $blastdb = [
+    'name' => 'DevSeed Database: TREMBL',
+    'description' => 'A dummy database created by DevSeed',
+  ];
 
     /**
      * Part 2:
@@ -49,13 +49,13 @@ class DevSeedSeeder extends Seeder
      * located file_local => server path where the file is located.
      */
 
-    // protected $landmark_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/sequences/empty_landmarks.fasta'];
+    protected $landmark_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/sequences/empty_landmarks.fasta'];
 
     protected $landmark_type = 'scaffold';
 
-    // protected $mRNA_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/sequences/mrna_mini.fasta'];
+    protected $mRNA_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/sequences/mrna_mini.fasta'];
 
-    // protected $protein_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/sequences/polypeptide_mini.fasta'];
+    protected $protein_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/sequences/polypeptide_mini.fasta'];
 
     // protected $gff_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/gff/filtered.gff'];
 
@@ -65,7 +65,7 @@ class DevSeedSeeder extends Seeder
 
     // protected $expression_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/expression/expression.tsv'];
 
-    // protected $interpro_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/ips/polypeptide_mini.fasta.xml'];
+    protected $interpro_file = ['file_remote' => 'https://raw.githubusercontent.com/statonlab/tripal_dev_seed/master/Fexcel_mini/ips/polypeptide_mini.fasta.xml'];
 
     // Regular expression that will link the protein name to the mRNA parent feature name.
     // protected $prot_regexp = '/(FRA.*?)(?=:)/';
@@ -368,16 +368,16 @@ class DevSeedSeeder extends Seeder
         }
 
         $count_query = $query;
-        $count_query->countQuery()->execute()->fetchField();
+       $count  = $count_query->countQuery()->execute()->fetchField();
 
-        if ($count_query === 0) {
+        if ($count == 0) {
             return factory($table)->create($factory_array);
         }
 
-        if ($count_query === 1) {
+        if ($count == 1) {
             return $query->execute()->fetchObject();
         }
 
-        throw new Exception("Error creating object for: ".$table.".\n Array supplied matches ".$count_query." results, must match 1.");
+        throw new Exception("Error creating object for: ".$table.".\n Array supplied matches ".$count." results, must match 1.");
     }
 }

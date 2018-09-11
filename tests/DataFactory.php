@@ -71,3 +71,18 @@ Factory::define('chado.feature', function (Faker\Generator $faker) {
         'type_id' => factory('chado.cvterm')->create()->cvterm_id,
     ];
 });
+
+Factory::define('chado.analysis', function (Faker\Generator $faker) {
+  return [
+    'name' => $faker->word,
+    'description' => $faker->text,
+    'program' => $faker->unique()->word,
+    'programversion' => $faker->unique()->word,
+    'sourcename' => $faker->unique()->word,
+    'algorithm' => $faker->word,
+    'sourcename' => $faker->word,
+    'sourceversion' => $faker->word,
+    'sourceuri' => $faker->word,
+    // 'timeexecuted' => $faker->time()// needs to match 2018-03-23 15:08:00.000000
+  ];
+});
